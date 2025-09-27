@@ -1,22 +1,11 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Redirecting to Cybozu...</title>
-    <script>
-      // URLパラメータから備品番号を取得（例：?item=3）
-      const params = new URLSearchParams(window.location.search);
-      const item = params.get("item");
-
-      // 今日の日付を da.YYYY.M.DD 形式で生成
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const m = today.getMonth() + 1;
-      const d = today.getDate();
-      const dateStr = `da.${yyyy}.${m}.${d}`;
-
-      // UIDを備品ごとに定義（ここに追加していくだけ！）
-      const uidMap = {
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>備品予定登録リダイレクト</title>
+  <script>
+    // 備品番号とUIDの対応表
+    const uidMap = {
       "1": "974",
       "2": "491",
       "3": "497",
@@ -25,22 +14,56 @@
       "6": "1229",
       "7": "498",
       "8": "972",
-      "9": "1700"  // ← 備品9を追加!
-      };
+      "9": "1700"
+    };
 
+    // URLパラメータから item を取得
+    function getItemParam() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("item");
+    }
+
+    // 日付を Cybozu 形式で取得（例：da.2025.9.27）
+    function getTodayCybozuDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
+      const day = today.getDate();
+      return `da.${year}.${month}.${day}`;
+    }
+
+    // リダイレクト処理
+    function redirectToCybozu() {
+      const item = getItemParam();
       const uid = uidMap[item] || "974"; // 未指定なら備品1に飛ばす
+      const date = getTodayCybozuDate();
+      const url = `https://x084yx74eg5p.cybozu.com/o/ag.cgi?page=ScheduleEntry&UID=${uid}&GID=469&Date=${date}&BDate=${date}&CP=sg`;
 
-      // CybozuのURL構築（GIDとCPは共通）
-      const targetURL = `https://x084yx74eg5p.cybozu.com/o/ag.cgi?page=ScheduleEntry&UID=${uid}&GID=469&Date=${dateStr}&BDate=${dateStr}&CP=sg`;
+      // 表示メッセージ
+      document.getElementById("message").textContent =
+        "Redirecting to today's Cybozu schedule entry page for your item...";
+
+      // 手動リンクを表示
+      const link = document.getElementById("fallbackLink");
+      link.href = url;
+      link.style.display = "inline";
 
       // リダイレクト実行
-      window.location.href = targetURL;
-    </script>
-  </head>
-  <body>
-    <p>Redirecting to today's Cybozu schedule entry page for your item...</p>
-  </body>
+      setTimeout(() => {
+        window.location.href = url;
+      }, 1000); // 1秒後にリダイレクト
+    }
+
+    window.onload = redirectToCybozu;
+  </script>
+</head>
+<body>
+  <h2 id="message">読み込み中です…</h2>
+  <p>うまくリダイレクトされない場合は、以下のリンクをタップしてください：</p>
+  <a id="fallbackLink" href="#" style="display:none;">予定登録ページを開く</a>
+</body>
 </html>
+
 
 
 
