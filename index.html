@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Redirecting to Cybozu...</title>
+    <script>
+      // URLパラメータから備品番号を取得（例：?item=3）
+      const params = new URLSearchParams(window.location.search);
+      const item = params.get("item");
+
+      // 今日の日付を da.YYYY.M.DD 形式で生成
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const m = today.getMonth() + 1;
+      const d = today.getDate();
+      const dateStr = `da.${yyyy}.${m}.${d}`;
+
+      // UIDを備品ごとに定義（ここに追加していくだけ！）
+      const uidMap = {
+        "1": "974",   // 備品1
+        "2": "491",   // 備品2
+        "3": "497",   // 備品3
+        "4": "492",   // 備品4
+        "5": "1699",  // 備品5
+        "6": "1229",  // 備品6
+        "7": "498",   // 備品7
+        "8": "972"    // 備品8
+      };
+
+      const uid = uidMap[item] || "974"; // 未指定なら備品1に飛ばす
+
+      // CybozuのURL構築（GIDとCPは共通）
+      const targetURL = `https://x084yx74eg5p.cybozu.com/o/ag.cgi?page=ScheduleEntry&UID=${uid}&GID=469&Date=${dateStr}&BDate=${dateStr}&CP=sg`;
+
+      // リダイレクト実行
+      window.location.href = targetURL;
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to today's Cybozu schedule entry page for your item...</p>
+  </body>
+</html>
